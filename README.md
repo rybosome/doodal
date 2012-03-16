@@ -353,7 +353,7 @@ class Animal extends Node {
 Note also that any class extending Node must have the `@MachineName` annotation, containing the Drupal type 
 in question. Attempting to instantiate a class extending Node without this annotation will throw an exception.
 
-## What's with the name? <a id="name" />
+## <a name="name">What's with the name?</a>
 
 The name came from my step-brother Nathan, who referred to Drupal as 'doodle' once. I figured that the
 double 'oo' of 'Doodal' lined up nicely with the term "Object-Oriented". The intentional misspelling of 'doodle'
