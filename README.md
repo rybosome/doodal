@@ -10,14 +10,16 @@ Doodal is _not_ right for you if...
 - You aren't a developer
 - You're happy with Drupal's existing nodes
 - Your website is a basic, content-driven website
-- You are not running PHP 5.3.x
+- You are not running PHP 5.3.x or greater
+- You are not running Drupal 7
 
 Doodal may be right for you if...
 
 - You are writing a web app in Drupal that truly is a web app, not just a content-driven website (i.e. you've used the term 'business logic')
 - You're in a situation where your website's data is intertwined with its content
 - You don't like spaghetti
-- You are running PHP 5.3.x
+- You are running PHP 5.3.x or greater
+- You are running Drupal 7
 
 ## What's the point?
 
@@ -121,9 +123,10 @@ Are you tired of writing code that looks like the following?
 <?= array_key_exists('und', $node->first_name) ? $node->first_name['und'][0]['safe_value'] : ''; // Gross =( ?>
 ```
 
-I certainly am, that's obnoxious boilerplate. It'd be so much nicer to just write this:
+I certainly am, that's obnoxious. It'd be so much nicer to just write this:
 
 ```php
+<!-- Doodal -->
 <?= $node->first_name  // =) ?>
 ```
 
@@ -155,13 +158,6 @@ $new_node->save();
 ```
 
 Much better. We only shaved off 3 lines of code, but this is significantly more readable.
-Does this actually work? Will this create a new node in the database if it didn't exist before?
-
-```php
-<?= node_load($new_node->nid)->title; // Pirate Ship ?>
-```
-
-Yep.
 
 #### Are there any other minor conveniences?
 
@@ -328,7 +324,7 @@ so you'll have to imagine it.
 If trying to imagine that nest of spaghetti-code, pseudo-namespaced function calls, cruft, bloat, `array_key_exists` 
 and what-have-you makes your head hurt, consider this a salve - it'll significantly reduce the pain of 
 managing a web application where your data and your content overlap, since you no longer have to play the weird, 
-dancey-mergey game whenever you're trying to get parity between the two. It also has the benefit of being comprehensible to non-Drupal devs.
+dancey-mergey game whenever you're trying to get parity between the two.
 
 
 ## Anything else I should know?
@@ -340,7 +336,9 @@ You should probably know the annotation schema for properties. There are three t
 - Cardinality
 
 Name: This is simple. Just the name of the field in the raw Drupal node.
+
 Type: This is either going to be `Node::PRIMITIVE` or `Node::ATTACHMENT`. If it's not a file (image or otherwise), it's a primitive.
+
 Cardinality: Your options are `Node::CARDINALITY_ARRAY` and `Node::CARDINALITY_SCALAR`. 1 value = scalar, many = array.
 
 Note also that any class extending Node must have the `@MachineName` annotation, containing the Drupal type in question. Attempting to
@@ -363,4 +361,4 @@ that I doubt the community at Drupal.org would get excited about (or agree with)
 ## What's missing?
 
 - Doodal doesn't account for languages other than `default or none`.
-- Changes made to a node body won't persist.
+- Body summaries cannot be edited programmatically
