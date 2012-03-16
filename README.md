@@ -19,7 +19,7 @@ It allows you to interact with Drupal nodes in a more object-oriented way.
 7. [Why isn't this on Drupal.org?](#drupal-org) 
 8. [What's missing?](#missing) 
 
-## Is Doodal right for me? <a id="right" />
+## <a id="right">Is Doodal right for me?</a>
 
 Doodal is _not_ right for you if...
 
@@ -37,7 +37,7 @@ Doodal may be right for you if...
 - You are running PHP 5.3.x or greater
 - You are running Drupal 7.x
 
-## What's the point? <a id="point" />
+## <a name="point">What's the point?</a>
 
 Object-oriented programming is not the only style of programming, the best,
 nor is it always the most appropriate. It is, however, an appropriate
@@ -51,7 +51,7 @@ the procedural logic required to compensate for this becomes spaghetti-like and 
 Doodal doesn't enable you to do anything that's not possible with vanilla Drupal, but it may make
 your code easier to write and maintain.
 
-## Let's see it <a id="see" />
+## <a name="see">Let's see it</a> 
 
 In the context of these next few examples, assume that we have a content type
 called 'Person', containing all of the fields you would logically expect. There
@@ -60,7 +60,7 @@ is a person node with node id 15, in particular, that we will look at.
 To highlight the reduction in code required by using Doodal, the equivalent
 raw Drupal code will be displayed as well.
 
-#### Gettin' <a id="gettin" />
+#### <a name="gettin">Gettin'</a>
 
 A common use case is getting all published nodes of a given type. Compare the readability between
 one of the many ways to do it in Drupal with the Doodal way.
@@ -98,7 +98,7 @@ $person = Person::get_by_nid(27); // $person == NULL
 ?>
 ```
 
-#### Ok, what do I have to do? <a id="i-do" />
+#### <a name="i-do">Ok, what do I have to do?</a>
 
 So far, not much. You'll just need a Person class in your application. The code
 will look a little something like this:
@@ -116,7 +116,7 @@ we get the above functionality by writing two lines of code.
 The code for a full implementation is a little bit more involved (you have to annotate each property you want 
 loaded from a node beyond those common to all nodes), but this will give you a fully functional class for your simple use cases.
 
-#### Fine. What else does it do? <a id="else-do" />
+#### <a name="else-do">Fine. What else does it do?</a>
 
 If you're looking to simply echo out the value of a particular property in a node which is optional,
 meaning that the user may not have entered it, you'll have to write something like the following
@@ -157,7 +157,7 @@ $person->save();
 ?>
 ```
 
-#### Are there any other minor conveniences? <a id="minor-conveniences" />
+#### <a name="minor-conveniences">Are there any other minor conveniences?</a> 
 
 ```php
 <?php
@@ -180,7 +180,7 @@ So, the following code in your `node--person.tpl.php` file would work just fine:
 <small class="age"><?= $oNode->age ?></small>
 ```
 
-#### Um...what if I want to instantiate a Node object, but I don't know offhand which class is going to implement it? <a id="abstract-factory" />
+#### <a name="abstract-factory">Um...what if I want to instantiate a Node object, but I don't know offhand which class is going to implement it?</a>
 
 Internally, Doodal has to instantiate some class extending Node without knowing exactly what that is.
 Enter the ol' gang of four pattern, the (not-quite) abstract-factory!
@@ -203,7 +203,7 @@ $node = Node::get_by_nid(27); // $node == NULL
 
 Caching is employed for speed reasons, so always clear the cache after writing a new implementing class.
 
-## Give me an actual, legitimate, front-to-back, well is you feeling that, put one hand up, can you repeat that, example. <a id="example" />
+## <a name="example">Give me an actual, legitimate, front-to-back, well is you feeling that, put one hand up, can you repeat that, example.</a>
 
 Here's your (fictional but reasonable) situation: your application has a content type called `Event`. This has 
 the fields you would probably expect, so I won't list those, beyond noting that every event must have an 
@@ -319,7 +319,7 @@ and what-have-you makes your head hurt, consider this a salve - it'll significan
 managing a web application where your data and your content overlap.
 
 
-## Annotation Schema <a id="schema" />
+## <a name="schema">Annotation Schema</a>
 
 - Name
 - Type
@@ -359,7 +359,7 @@ The name came from my step-brother Nathan, who referred to Drupal as 'doodle' on
 double 'oo' of 'Doodal' lined up nicely with the term "Object-Oriented". The intentional misspelling of 'doodle'
 also makes that nice '-al' ending, keeping it in line with 'Drupal'.
 
-## Why isn't this on Drupal.org? <a id="drupal-org" />
+## <a name="drupal-org">Why isn't this on Drupal.org?</a>
 
 Well, frankly this module is pretty non-Drupal. Most Drupal-ers maintain a firm stance against the need for
 object orientation. I'm of the opinion that Drupal, being a CMS/platform, is not well suited to the same
@@ -367,7 +367,7 @@ tasks that a web-framework (Rails, Grails, ASP.NET MVC, CakePHP, Django, Wicket,
 Doodal is useful when you're forced to use Drupal like one of the aforementioned web frameworks, which is something
 that I doubt the community at Drupal.org would get excited about (or agree with).
 
-## What's missing? <a id="missing" />
+## <a name="missing">What's missing?</a>
 
 - Doodal doesn't account for languages other than `default or none`.
 - Body summaries cannot be edited programmatically
