@@ -7,19 +7,19 @@ It allows you to interact with Drupal nodes in a more object-oriented way.
 
 Doodal is _not_ right for you if...
 
-- You aren't a developer
-- You're happy with Drupal's existing nodes
+- You are not a developer
+- You are happy with Drupal's existing nodes
 - Your website is a basic, content-driven website
 - You are not running PHP 5.3.x or greater
-- You are not running Drupal 7
+- You are not running Drupal 7.x
 
 Doodal may be right for you if...
 
 - You are writing a web app in Drupal that truly is a web app, not just a content-driven website (i.e. you've used the term 'business logic')
-- You're in a situation where your website's data is intertwined with its content
-- You don't like spaghetti
+- You are in a situation where your website's data is intertwined with its content
+- You do not like spaghetti
 - You are running PHP 5.3.x or greater
-- You are running Drupal 7
+- You are running Drupal 7.x
 
 ## What's the point?
 
@@ -30,9 +30,7 @@ abstraction over Drupal's content system.
 Drupal nodes imitate object orientation, but they lack true encapsulation and inheritance.
 In a web application where your content, which is represented by nodes, is also data that needs
 to be handled and processed in special ways (such as by interacting with a web service),
-the procedural logic required to compensate for this becomes spaghetti-like and difficult to maintain. 
-Although it's not really possible to do true MVC in Drupal, Doodal will give you a closer approximation to models 
-than what you get out of the box.
+the procedural logic required to compensate for this becomes spaghetti-like and difficult to maintain.
 
 Doodal doesn't enable you to do anything that's not possible with vanilla Drupal, but it may make
 your code easier to write and maintain.
@@ -43,10 +41,13 @@ In the context of these next few examples, assume that we have a content type
 called 'Person', containing all of the fields you would logically expect. There
 is a person node with node id 15, in particular, that we will look at.
 
+To highlight the reduction in code required by using Doodal, the equivalent
+raw Drupal code will be displayed as well.
+
 #### Gettin'
 
-Although there are many ways of doing it, one way that you may have of getting
-all published Person nodes may be the following:
+A common use case is getting all published nodes of a given type. Compare the readability between
+one of the many ways to do it in Drupal with the Doodal way.
 
 ```php
 <?php
@@ -54,31 +55,19 @@ all published Person nodes may be the following:
 $results = db_query("SELECT nid FROM {node} WHERE type = 'person' AND status = 1")->fetchAll();
 $nids = array_map( function($x) {return $x->nid;}, $results );
 $people = node_load_multiple($nids);
-?>
-```
 
-Hmm. What if we could do the following?
-
-```php
-<?php
 // Doodal
 $people = Person::get_all_published();
 ?>
 ```
 
-Drupal makes it dead simple to get a single node.
+Drupal makes it simple to get a single node, so Doodal does too:
 
 ```php
 <?php
 // Drupal
 $person = node_load(15);
-?>
-```
 
-...so, Doodal does too:
-
-```php
-<?php
 // Doodal
 $person = Person::get_by_nid(15);
 ?>
@@ -89,10 +78,7 @@ $person = Person::get_by_nid(15);
 
 ```php
 <?php
-$person = Person::get_by_nid(27);
-echo $person ? 'Yay' : 'Nah';
-// 'Nah'
-// $person is NULL
+$person = Person::get_by_nid(27); // $person == NULL
 ?>
 ```
 
@@ -116,57 +102,51 @@ loaded from a node beyond those common to all nodes), but this will give you a f
 
 #### Fine. What else does it do?
 
-Are you tired of writing code that looks like the following?
+If you're looking to simply echo out the value of a particular property in a node which is optional,
+meaning that the user may not have entered it, you'll have to write something like the following
+to account for that - compare to the much more readable Doodal.
 
 ```php
-<!-- I just want to echo out this person node's first name without getting PHP warnings -->
-<?= array_key_exists('und', $node->first_name) ? $node->first_name['und'][0]['safe_value'] : ''; // Gross =( ?>
-```
+<!-- Drupal -->
+<?= array_key_exists('und', $node->first_name) ? $node->first_name['und'][0]['safe_value'] : ''; ?>
 
-I certainly am, that's obnoxious. It'd be so much nicer to just write this:
-
-```php
 <!-- Doodal -->
-<?= $node->first_name  // =) ?>
+<?= $node->first_name ?>
 ```
 
-If you've ever had to manually create a node, then you've probably written something like the following:
+Take a look at the difference in creating, populating, and saving a new node programmatically.
+The lack of weighty property setters makes the code significantly more readable.
 
 ```php
 <?php
 // Drupal
-$new_node = new stdClass();
-$new_node->title = 'Pirate Ship';
-$new_node->type = 'things_i_want_to_be_when_i_grow_up';
-$new_node->how_awesome['und'] = array();
-$new_node->how_awesome['und'][] = array('safe_value' => 'You have no idea');
-node_object_prepare($new_node);
-node_save($new_node);
-?>
-```
+$person = new stdClass();
+$person->title = 'Jack Black';
+$person->type = 'person';
+$person->age['und'][0]['value'] = 42;
+$person->movies['und'][0]['safe_value'] = 'School of Rock';
+$person->movies['und'][1]['safe_value'] = 'Shallow Hal';
+$person->body['und'][0]['value'] = 'Jack Black, or Jables, is one half of the legendary rock duo - THE D';
+node_object_prepare($person);
+node_save($person);
 
-It doesn't look too bad, I guess...but that setting of the `how_awesome` property is yucky and unintuitive. Can we do better?
-
-```php
-<?php
 // Doodal
-$new_node = new ThingsIWantToBeWhenIGrowUp();
-$new_node->title = 'Pirate Ship';
-$new_node->how_awesome = 'You have no idea';
-$new_node->save();
+$person = new Person();
+$person->title = 'Jack Black';
+$person->age = 42;
+$person->movies = array('School of Rock', 'Shallow Hal');
+$person->body = 'Jack Black, or Jables, is one half of the legendary rock duo - THE D';
+$person->save();
+
 ?>
 ```
-
-Much better. We only shaved off 3 lines of code, but this is significantly more readable.
 
 #### Are there any other minor conveniences?
 
-Of course; I'm glad you asked such a specific question!
-
 ```php
 <?php
-echo $node->url;
-// '/people/jack-black', or whatever your aliased URL is. If you haven't aliased it, that's /node/${nid}
+echo $node->uri;
+// '/people/jack-black', or whatever your aliased URI is. If you haven't aliased it, that's /node/${nid}
 
 echo $node->get_summary(100);
 // The first 100 characters of the body text truncated logically
@@ -176,12 +156,14 @@ print_r($node->raw_node);
 ?>
 ```
 
-More importantly, this module will drop a variable named `$oNode` into the scope of all of your node template files.
+This module will also drop a variable named `$oNode` into the scope of all of your node template files.
 So, the following code in your `node--person.tpl.php` file would work just fine:
 
 ```php
 <h2><?= $oNode->get_summary(200) ?></h2>
+<small class="age"><?= $oNode->age ?></small>
 ```
+
 #### Um...what if I want to instantiate a Node object, but I don't know offhand which class is going to implement it?
 
 Internally, Doodal has to instantiate some class extending Node without knowing exactly what that is.
@@ -190,8 +172,7 @@ Enter the ol' gang of four pattern, the (not-quite) abstract-factory!
 ```php
 <?php
 $some_node = Node::get_by_nid(15);
-echo get_class($some_node);
-// 'Person'
+echo get_class($some_node); // 'Person'
 ?>
 ```
 
@@ -200,11 +181,7 @@ What happens if we really don't have a class to implement the node in question?
 ```php
 <?php
 // We don't have an animal class, but 27 is a node id for an animal node
-$node = Node::get_by_nid(27);
-
-$animal_name = $node ? 'Bandit' : 'lksjdf';
-// lksjdf
-// We will never be able to pronounce our animal's name
+$node = Node::get_by_nid(27); // $node == NULL
 ?>
 ```
 
@@ -212,12 +189,12 @@ Caching is employed for speed reasons, so always clear the cache after writing a
 
 ## Give me an actual, legitimate, front-to-back, well is you feeling that, put one hand up, can you repeat that, example.
 
-Here's your (fictional but reasonable) situation: your application has a content type called `Event`. This has the fields you would
-probably expect, so I won't list those, beyond noting that every event must have an event coordinator - this
-is a person, which is a content type that we already have in our pretend system, right? Your application allows
-the admins to edit some of the basic content of an event, but the important data (namely, when the event is)
-is going to come from a web service. Since we aren't scruffy devs, here, we're going to display these
-events all purty-like on the front-end.
+Here's your (fictional but reasonable) situation: your application has a content type called `Event`. This has 
+the fields you would probably expect, so I won't list those, beyond noting that every event must have an 
+event coordinator - this is a person, which is a content type that we already have in our pretend system, 
+right? Your application allows the admins to edit some of the basic content of an event, but the important 
+data (namely, when the event is) is going to come from a web service. Since we aren't scruffy devs, here, 
+we're going to display these events all purty-like on the front-end.
 
 Our application will end up containing the following:
 
@@ -317,14 +294,13 @@ Event Coordinator:
 </a>
 ```
 
-The true benefit to using Doodal isn't obvious until you compare the code you would write with it to the code you would
-write without it. The God's honest is that I don't want to write that code (this is why I wrote Doodal instead),
-so you'll have to imagine it. 
+The true benefit to using Doodal isn't obvious until you compare the code you would write with 
+it to the code you would write without it. The God's honest is that I don't want to write that 
+code (this is why I wrote Doodal instead),so you'll have to imagine it. 
 
 If trying to imagine that nest of spaghetti-code, pseudo-namespaced function calls, cruft, bloat, `array_key_exists` 
 and what-have-you makes your head hurt, consider this a salve - it'll significantly reduce the pain of 
-managing a web application where your data and your content overlap, since you no longer have to play the weird, 
-dancey-mergey game whenever you're trying to get parity between the two.
+managing a web application where your data and your content overlap.
 
 
 ## Anything else I should know?
@@ -341,8 +317,27 @@ Type: This is either going to be `Node::PRIMITIVE` or `Node::ATTACHMENT`. If it'
 
 Cardinality: Your options are `Node::CARDINALITY_ARRAY` and `Node::CARDINALITY_SCALAR`. 1 value = scalar, many = array.
 
-Note also that any class extending Node must have the `@MachineName` annotation, containing the Drupal type in question. Attempting to
-instantiate a class extending Node without this annotation will throw an exception.
+```php
+<?php
+/** @MachineName('animal') */
+class Animal extends Node {
+	
+	public
+		/** @NodeProperties(name = 'name', property_type = Node::PRIMITIVE, cardinality = Node::CARDINALITY_SCALAR) */
+		$name, // This is a single string
+		
+		/** @NodeProperties(name = 'foods_eaten', property_type = Node::PRIMITIVE, cardinality = Node::CARDINALITY_ARRAY) */
+		$foods_eaten, // This is an array of strings
+		
+		/** @NodeProperties(name = 'photo', property_type = Node::ATTACHMENT, cardinality = Node::CARDINALITY_SCALAR) */
+		$photo; // This is a single uploaded image
+	
+}
+?>
+```
+
+Note also that any class extending Node must have the `@MachineName` annotation, containing the Drupal type 
+in question. Attempting to instantiate a class extending Node without this annotation will throw an exception.
 
 ## What's with the name?
 
