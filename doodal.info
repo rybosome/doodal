@@ -1,0 +1,12 @@
+name = Doodal
+description = "Object-oriented wrapper API around Drupal's content system."
+package = Doodal
+core = 7.x
+
+files[] = class.Annotations.php
+files[] = class.Attachment.php
+files[] = class.MachineName.php
+files[] = class.MissingNodeAnnotationException.php
+files[] = class.Node.php
+files[] = class.NodeClassRegistry.php
+files[] = class.NodeProperties.php

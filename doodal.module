@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * Implements hook_preprocess().
+ *
+ * Adds a variable named $oNode to the theme layer, which is an objectified
+ * version of the standard Drupal node.
+ */
+function doodal_preprocess(&$variables, $hook) {
+	if (array_key_exists('node', $variables) && $variables['node']) {
+		$variables['oNode'] = NodeClassRegistry::init_class($variables['node']->nid);
+	}
+}
