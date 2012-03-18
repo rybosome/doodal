@@ -73,14 +73,11 @@ class NodeClassRegistry {
 	 */
 	private static function init_registry() {
 	
-		##
-		## Manually check cache time since there are issues with Drupal 7's caching mechanism returning expired content
 		$cache = cache_get(self::DOODAL_CACHE_ID);
-		$one_hour_ago = time() - 3600;
 	
 		##
 		## Attempt to get registry from cache
-		if ($cache  && !empty($cache->data) && $cache->created >= $one_hour_ago) {
+		if ($cache  && !empty($cache->data)) {
 			return $cache->data;
 		}
 		

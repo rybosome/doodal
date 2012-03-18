@@ -1,12 +1,13 @@
 # Doodal
 
 Doodal is an object-oriented wrapper library around Drupal 7's node system.
-It allows you to interact with Drupal nodes in a more object-oriented way.
+It allows you to interact with Drupal nodes in a more object-oriented way by removing
+much of the syntactic barrier to writing classes that treat nodes like models.
 
 # Table of Contents
 
-1. [Is Doodal right for me?](#right) 
-2. [What's the point?](#point) 
+1. [What's the point?](#point) 
+2. [Is Doodal right for me?](#right)
 3. [Let's see it](#see) 
 	1. [Gettin'](#gettin) 
 	2. [Ok, what do I have to do?](#i-do) 
@@ -19,7 +20,19 @@ It allows you to interact with Drupal nodes in a more object-oriented way.
 7. [Why isn't this on Drupal.org?](#drupal-org) 
 8. [What's missing?](#missing) 
 
-## <a id="right">Is Doodal right for me?</a>
+## <a name="point">What's the point?</a>
+
+Object-oriented programming is not the only style of programming, the best,
+nor is it always the most appropriate. It is, however, an appropriate
+abstraction over Drupal's content system. Drupal nodes imitate object orientation, but they lack true encapsulation and inheritance.
+In a web application where your content, which is represented by nodes, is also data that needs
+to be handled and processed in special ways (such as by interacting with a web service),
+the procedural logic required to compensate for this becomes spaghetti-like and difficult to maintain.
+
+Enter Doodal - using this library, you can easily write classes that function as Models representing the different
+Node content types in your application. This is not an attempt to make Drupal into an MVC framework, but rather an effort to give developers a cleaner, more intuitive way to write code.
+
+## <a name="right">Is Doodal right for me?</a>
 
 Doodal is _not_ right for you if...
 
@@ -36,20 +49,6 @@ Doodal may be right for you if...
 - You do not like spaghetti
 - You are running PHP 5.3.x or greater
 - You are running Drupal 7.x
-
-## <a name="point">What's the point?</a>
-
-Object-oriented programming is not the only style of programming, the best,
-nor is it always the most appropriate. It is, however, an appropriate
-abstraction over Drupal's content system.
-
-Drupal nodes imitate object orientation, but they lack true encapsulation and inheritance.
-In a web application where your content, which is represented by nodes, is also data that needs
-to be handled and processed in special ways (such as by interacting with a web service),
-the procedural logic required to compensate for this becomes spaghetti-like and difficult to maintain.
-
-Doodal doesn't enable you to do anything that's not possible with vanilla Drupal, but it may make
-your code easier to write and maintain.
 
 ## <a name="see">Let's see it</a> 
 
@@ -118,16 +117,16 @@ loaded from a node beyond those common to all nodes), but this will give you a f
 
 #### <a name="else-do">Fine. What else does it do?</a>
 
-If you're looking to simply echo out the value of a particular property in a node which is optional,
-meaning that the user may not have entered it, you'll have to write something like the following
-to account for that - compare to the much more readable Doodal.
+If you're looking to simply echo out the value of a particular property in a node that the user may not have 
+entered, you'll have to write something like the following
+to account for it - compare to the much more readable Doodal.
 
 ```php
 <!-- Drupal -->
-<?= array_key_exists('und', $node->first_name) ? $node->first_name['und'][0]['safe_value'] : ''; ?>
+<?= array_key_exists('und', $person->first_name) ? $person->first_name['und'][0]['safe_value'] : ''; ?>
 
 <!-- Doodal -->
-<?= $node->first_name ?>
+<?= $person->first_name ?>
 ```
 
 Take a look at the difference in creating, populating, and saving a new node programmatically.
@@ -161,13 +160,13 @@ $person->save();
 
 ```php
 <?php
-echo $node->uri;
+echo $person->uri;
 // '/people/jack-black', or whatever your aliased URI is. If you haven't aliased it, that's /node/${nid}
 
-echo $node->get_summary(100);
+echo $person->get_summary(100);
 // The first 100 characters of the body text truncated logically
 
-print_r($node->raw_node);
+print_r($person->raw_node);
 // Gets the actual Drupal node stdClass object used for construction
 ?>
 ```
@@ -197,7 +196,7 @@ What happens if we really don't have a class to implement the node in question?
 ```php
 <?php
 // We don't have an animal class, but 27 is a node id for an animal node
-$node = Node::get_by_nid(27); // $node == NULL
+$some_node = Node::get_by_nid(27); // $node == NULL
 ?>
 ```
 
